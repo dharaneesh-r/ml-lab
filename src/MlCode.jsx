@@ -123,19 +123,32 @@ delay(1000); // Wait for 1 second
     <div className="p-6 max-w-6xl mx-auto">
       <h2 className="text-2xl font-bold mb-4 text-center">IOT Code Viewer</h2>
       <pre className="bg-gray-900 text-green-400 p-4 rounded-lg overflow-auto text-sm leading-6">
-        <code>2. {code} </code>
+        <div>
+          2. IoT Application Development Using sensors and actuators
+          (temperature sensor, light sensor, infrared sensor)
+        </div>
+        <code>{code} </code>
         <div>{lineSeparator}</div>
       </pre>
       <pre className="bg-gray-900 text-green-400 p-4 rounded-lg overflow-auto text-sm leading-6">
-        <code>3. {code3} </code>
+        <div>
+          3. To study Raspberry Pi development board and to implement LED
+          blinking applications
+        </div>
+        <code>{code3} </code>
         <div>{lineSeparator}</div>
       </pre>
       <pre className="bg-gray-900 text-green-400 p-4 rounded-lg overflow-auto text-sm leading-6">
-        <code>5. {code5} </code>
+        <div>
+          5. To develop an application that measures the room temperature and
+          posts the temperature value on the cloudplatform.
+        </div>
+        <code>{code5} </code>
         <div>{lineSeparator}</div>
       </pre>
       <pre className="bg-gray-900 text-green-400 p-4 rounded-lg overflow-auto text-sm leading-6">
-        <code>8. {code8} </code>
+        <div>8. Develop a simple application based on sensors</div>
+        <code> {code8} </code>
         <div>{lineSeparator}</div>
       </pre>
     </div>
