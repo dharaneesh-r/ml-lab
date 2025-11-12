@@ -1,129 +1,142 @@
 import React from "react";
 
 const MlCode = () => {
+  const lineSeparator =
+    "--------------------------------------------------------------------------------------------------------------";
   const code = `
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-from sklearn.datasets import load_iris
-from sklearn.model_selection import train_test_split
+#include <DHT.h>
 
-# ----------------------------
-# Load dataset
-# ----------------------------
-data = load_iris()
+#define DHTPIN 2	// Pin connected to DHT sensor #define DHTTYPE DHT11	// DHT 11 sensor
+#define LDR_PIN A0			// Light sensor connected to analog pin A0 #define IR_PIN 3	// Infrared sensor connected to digital pin 3 #define LED_PIN 13		// Built-in LED pin
+#define BUZZER_PIN 8	// Buzzer connected to pin 8 DHT dht(DHTPIN, DHTTYPE);
+void setup() { Serial.begin(9600); dht.begin();
+pinMode(LED_PIN, OUTPUT); pinMode(BUZZER_PIN, OUTPUT);
+pinMode(IR_PIN, INPUT);
+}
 
-# Features and target
-X = data.data
-y = data.target
+void loop() {
+// Read temperature
+float temp = dht.readTemperature();
 
-# One-hot encoding for target variable
-y = pd.get_dummies(y).values
+// Read light sensor
+int lightValue = analogRead(LDR_PIN);
 
-# Split data into training and testing sets
-x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=4)
+// Read infrared sensor
+int irValue = digitalRead(IR_PIN);
 
-# ----------------------------
-# Initialize hyperparameters
-# ----------------------------
-learning_rate = 0.1
-iterations = 8000
-N = y_train.shape[0]
+Serial.print("Temperature: "); Serial.print(temp); Serial.print(" °C, Light: "); Serial.print(lightValue); Serial.print(", IR Sensor: "); Serial.println(irValue);
 
-# Network architecture
-input_size = 4       # Number of input features
-hidden_size = 2      # Number of neurons in hidden layer
-output_size = 3      # Number of output neurons (3 classes in Iris dataset)
+// Control actuators based on sensor values if(lightValue < 300) {
+digitalWrite(LED_PIN, HIGH);  // Turn ON LED if dark
+} else {
+digitalWrite(LED_PIN, LOW);
+}
 
-# Initialize weights
-np.random.seed(10)
-W1 = np.random.normal(scale=0.5, size=(input_size, hidden_size))  # Hidden layer weights
-W2 = np.random.normal(scale=0.5, size=(hidden_size, output_size))  # Output layer weights
+if(irValue == HIGH) {
+digitalWrite(BUZZER_PIN, HIGH); // Turn ON buzzer if IR detected
+} else {
+digitalWrite(BUZZER_PIN, LOW);
+}
+delay(2000); // Wait for 2 seconds
+}
 
-# ----------------------------
-# Helper functions
-# ----------------------------
-def sigmoid(x):
-    return 1 / (1 + np.exp(-x))
+`;
 
-def mean_squared_error(y_pred, y_true):
-    return ((y_pred - y_true) ** 2).sum() / (2 * y_pred.size)
+  const code3 = `
+import RPi.GPIO as GPIO import time
 
-def accuracy(y_pred, y_true):
-    acc = y_pred.argmax(axis=1) == y_true.argmax(axis=1)
-    return acc.mean()
+# Use BCM pin numbering GPIO.setmode(GPIO.BCM)
 
-# ----------------------------
-# Backpropagation Neural Network
-# ----------------------------
-mse_list = []
-accuracy_list = []
+LED_PIN = 17 GPIO.setup(LED_PIN, GPIO.OUT)
 
-for itr in range(iterations):
-    # Feed Forward
-    Z1 = np.dot(x_train, W1)
-    A1 = sigmoid(Z1)
-    Z2 = np.dot(A1, W2)
-    A2 = sigmoid(Z2)
+try:
+while True:
+GPIO.output(LED_PIN, GPIO.HIGH) # LED ON
+time.sleep(1)	# Wait 1 second GPIO.output(LED_PIN, GPIO.LOW) # LED OFF
+time.sleep(1)	# Wait 1 second
+except KeyboardInterrupt: print("Program stopped")
 
-    # Compute loss and accuracy
-    mse = mean_squared_error(A2, y_train)
-    acc = accuracy(A2, y_train)
-    mse_list.append(mse)
-    accuracy_list.append(acc)
+finally:
+GPIO.cleanup() # Reset GPIO settings
+`;
 
-    # Backpropagation
-    error_output = A2 - y_train
-    dZ2 = error_output * A2 * (1 - A2)
-    error_hidden = np.dot(dZ2, W2.T)
-    dZ1 = error_hidden * A1 * (1 - A1)
+  const code5 = `#include <ESP8266WiFi.h> #include <DHT.h>
+#include <ESP8266HTTPClient.h>
 
-    # Weight updates
-    W2_update = np.dot(A1.T, dZ2) / N
-    W1_update = np.dot(x_train.T, dZ1) / N
+#define DHTPIN 2	// GPIO pin where DHT sensor is connected #define DHTTYPE DHT11
 
-    W2 -= learning_rate * W2_update
-    W1 -= learning_rate * W1_update
+const char* ssid = "YOUR_SSID";
+const char* password = "YOUR_PASSWORD";
 
-# ----------------------------
-# Plot Mean Squared Error and Accuracy
-# ----------------------------
-plt.figure(figsize=(10, 5))
+const char* server = "http://api.thingspeak.com/update"; const String apiKey = "YOUR_THINGSPEAK_API_KEY";
 
-plt.subplot(1, 2, 1)
-plt.plot(mse_list)
-plt.title('Mean Squared Error')
-plt.xlabel('Iterations')
-plt.ylabel('MSE')
+DHT dht(DHTPIN, DHTTYPE);
 
-plt.subplot(1, 2, 2)
-plt.plot(accuracy_list)
-plt.title('Accuracy')
-plt.xlabel('Iterations')
-plt.ylabel('Accuracy')
+void setup() { Serial.begin(115200); dht.begin();
 
-plt.tight_layout()
-plt.show()
+WiFi.begin(ssid, password); Serial.print("Connecting to WiFi");
 
-# ----------------------------
-# Test Accuracy
-# ----------------------------
-Z1 = np.dot(x_test, W1)
-A1 = sigmoid(Z1)
-Z2 = np.dot(A1, W2)
-A2 = sigmoid(Z2)
+while (WiFi.status() != WL_CONNECTED) { delay(500);
+Serial.print(".");
+}
 
-test_acc = accuracy(A2, y_test)
-print(f"Test Accuracy: {test_acc:.4f}")
+Serial.println("\nConnected to WiFi");
+}
+
+void loop() {
+float temperature = dht.readTemperature();
+
+if (isnan(temperature)) {
+Serial.println("Failed to read from DHT sensor!"); return;
+}
+
+Serial.print("Temperature: "); Serial.print(temperature);
+Serial.println(" °C"); if (WiFi.status() == WL_CONNECTED) { HTTPClient http;
+
+String postData = String(server) + "?api_key=" + apiKey + "&field1=" + String(temperature); http.begin(postData);
+int httpCode = http.GET();
+
+
+ 
+if (httpCode > 0) {
+Serial.println("Data posted successfully");
+} else {
+Serial.println("Error in posting data");}
+http.end();
+} else {
+Serial.println("WiFi Disconnected");
+}
+delay(20000); // Wait for 20 seconds before next reading
+}
+`;
+
+  const code8 = `const int sensorPin = A0; // Analog pin connected to LDR void setup() {
+Serial.begin(9600); Serial.println("Light Sensor Reading:");
+}
+void loop() {
+int sensorValue = analogRead(sensorPin); Serial.print("LDR Value: "); Serial.println(sensorValue);
+delay(1000); // Wait for 1 second
+}
 `;
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4 text-center">
-        Python Code Viewer
-      </h2>
+      <h2 className="text-2xl font-bold mb-4 text-center">IOT Code Viewer</h2>
       <pre className="bg-gray-900 text-green-400 p-4 rounded-lg overflow-auto text-sm leading-6">
-        <code>{code}</code>
+        <code>2. {code} </code>
+        <div>{lineSeparator}</div>
+      </pre>
+      <pre className="bg-gray-900 text-green-400 p-4 rounded-lg overflow-auto text-sm leading-6">
+        <code>3. {code3} </code>
+        <div>{lineSeparator}</div>
+      </pre>
+      <pre className="bg-gray-900 text-green-400 p-4 rounded-lg overflow-auto text-sm leading-6">
+        <code>5. {code5} </code>
+        <div>{lineSeparator}</div>
+      </pre>
+      <pre className="bg-gray-900 text-green-400 p-4 rounded-lg overflow-auto text-sm leading-6">
+        <code>8. {code8} </code>
+        <div>{lineSeparator}</div>
       </pre>
     </div>
   );

@@ -1,11 +1,8 @@
+import { Route, Routes } from "react-router-dom";
 import MlCode from "./MlCode";
 
 const App = () => {
-  return (
-    <div>
-      <MlCode />
-    </div>
-  );
+  return <MlCode />;
 };
 
 export default App;
