@@ -3,7 +3,7 @@ import React from "react";
 const MlCode = () => {
   const lineSeparator =
     "--------------------------------------------------------------------------------------------------------------";
-const code = `
+  const code = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -94,7 +94,9 @@ const registrations = [];
 function switchTab(tabId) {
 document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
 document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-document.querySelector(`.tab[onclick="switchTab('${tabId}')"]`).classList.add('active');
+document.querySelector(`.tab[
+    (onclick = "switchTab('${tabId}')")
+  ]`).classList.add('active');
 document.getElementById(tabId).classList.add('active');
 if (tabId === 'viewTab') renderTable(); }
 // Form submission
@@ -137,12 +139,12 @@ tbody.innerHTML = '<tr><td colspan="3">No registrations yet.</td></tr>';
 return;
 }
 registrations.forEach((entry) => {
-const row = `<tr><td>${entry.name}</td><td>${entry.email}</td><td>${entry.event}</td></tr>`;
+const row = <tr><td>${entry.name}</td><td>${entry.email}</td><td>${entry.event}</td></tr>;
 tbody.insertAdjacentHTML('beforeend', row); }); }
 </script>
 </body>
 </HTML>
-`
+`;
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
