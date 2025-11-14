@@ -153,28 +153,6 @@ tbody.insertAdjacentHTML('beforeend', row); }); }
           (temperature sensor, light sensor, infrared sensor)
         </div>
         <code>{code} </code>
-        <div>{lineSeparator}</div>
-      </pre>
-      <pre className="bg-gray-900 text-green-400 p-4 rounded-lg overflow-auto text-sm leading-6">
-        <div>
-          3. To study Raspberry Pi development board and to implement LED
-          blinking applications
-        </div>
-        <code>{code3} </code>
-        <div>{lineSeparator}</div>
-      </pre>
-      <pre className="bg-gray-900 text-green-400 p-4 rounded-lg overflow-auto text-sm leading-6">
-        <div>
-          5. To develop an application that measures the room temperature and
-          posts the temperature value on the cloudplatform.
-        </div>
-        <code>{code5} </code>
-        <div>{lineSeparator}</div>
-      </pre>
-      <pre className="bg-gray-900 text-green-400 p-4 rounded-lg overflow-auto text-sm leading-6">
-        <div>8. Develop a simple application based on sensors</div>
-        <code> {code8} </code>
-        <div>{lineSeparator}</div>
       </pre>
     </div>
   );
